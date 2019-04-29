@@ -47,10 +47,17 @@ class Perceptron(object):
 
 
     def inicializarW(self, vector_size):
+        """
+        Iniciar a 0 o a numeros aleatorios pequenos los pesos (W)
+        """
         rgen = numpy.random.RandomState(self.random_state)
         self.w = rgen.normal(loc=0.0, scale=0.01, size=vector_size)
     
     def actualizaPesos(self, X, y):
+        """
+        'y' son 1 o -1, de modo que si se predice bien update = 0
+        (1 - 1) o (-1 - -1)
+        """
         error = 0
         for xi, target in zip(X, y):
             update = self.m * (target - self.predecir(xi))
@@ -73,6 +80,10 @@ Leemos los datos del csv de valores de las flores que que tenemos
 from matplotlib.colors import ListedColormap
 
 class Data(object):
+    """
+    En esta clase obtenemos todos los datos ue tenemos de las florecicas esas
+    """
+    # Columnas de datos:
     L_SEPALO = 0
     W_SEPALO = 1
     L_PETALO = 2
@@ -90,34 +101,23 @@ class Data(object):
 
     def calcX_y(self):
         df = self.load_csv('./iris.data')
-        # Hacemos un tail de las ultimas 20 lineas para comprobar que se ha cargado
-        print(df.tail(20))
-        # Tomamos un subgrupo: las 100 primeras filas y las columnas que nos dan
-        # la longitud del sepalo y la longitud del petalo
         self.y = self.get_sub_group(df, 0, 100, [self.NOMBRE_FLOR])
         self.y = numpy.where(self.y == 'Iris-setosa', -1, 1)
         self.X = numpy.array(self.get_sub_group(df, 0, 100, [self.L_SEPALO, self.L_PETALO]))
     
     
 class Drawer(object):
-    def draw(x_label="sepal length (cm)", y_label="petal length (cm)", loc='upper left'):
-        plt.xlabel(x_label)
-        plt.ylabel(y_label)
-        plt.legend(loc)
-        plt.show()
-
     def draw_plots(self, data):
         """
         Dibujamos los dos tipos de flores por separado, sabemos que los
         primeros 50 datos corresponden a un tipo de flor y los siguientes
-        50 a otra
+        50 a otra. En este caso los datos estan ordenados y por eso se cojen asi
         """
         plt.scatter(data.X[:50,0], data.X[:50,1], color='red', marker="o", label="setosa")
         plt.scatter(data.X[50:100, 0], data.X[50:100,1], color='blue', marker="x", label="versicolor")
         return self
 
     def plot_decision_regions(self, data, classifier, resolution=0.02):
-        # definir un generador de marcadores y un grupo de colores
         markers = ('s', 'x', 'o', '^', 'v')
         colors = ('red', 'blue', 'ligthgreen', 'gray', 'cyan')
         cmap = ListedColormap(colors[:len(numpy.unique(data.y))])
@@ -132,6 +132,13 @@ class Drawer(object):
         plt.xlim(xx1.min(), xx1.max())
         plt.ylim(xx2.min(), xx2.max())
         return self
+
+    def draw(x_label="sepal length (cm)", y_label="petal length (cm)", loc='upper left'):
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
+        plt.legend(loc=loc)
+        plt.show()
+
 
 data = Data()
 """
