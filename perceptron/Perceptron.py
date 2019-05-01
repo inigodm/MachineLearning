@@ -33,7 +33,7 @@ class Perceptron(object):
         self.n_iter = n_iter
         self.random_state = random_state
 
-    def fit(self, X, y):
+    def entrenar(self, X, y):
         """
         Siendo 
         X el array bidimensional de entrada  [x1_1, x2_1,... xn_1:x1_2, x2_2...xn_2:....]
@@ -127,11 +127,23 @@ class Drawer(object):
         xx1, xx2 = numpy.meshgrid(numpy.arange(x1_m, x1_M, resolution),
                                   numpy.arange(x2_m, x2_M, resolution))
         Z = classifier.predecir(numpy.array([xx1.ravel(), xx2.ravel()]).T)
+        print(classifier.w)
         Z = Z.reshape(xx1.shape)
         plt.contourf(xx1, xx2, Z, alpha=0.3, cmap=cmap)
         plt.xlim(xx1.min(), xx1.max())
         plt.ylim(xx2.min(), xx2.max())
         return self
+
+    def drawLine(self, a, b, xmin, xmax, resolution=0.02):
+        resy = []
+        resx = []
+        for x in numpy.arange(xmin, xmax, resolution):
+            resy.append(a*x+b)
+            resx.append(x)
+        plt.plot(resx, resy, linewidth=2.0, color="green")
+        return self
+
+
 
     def draw(x_label="sepal length (cm)", y_label="petal length (cm)", loc='upper left'):
         plt.xlabel(x_label)
@@ -146,9 +158,13 @@ Ahora mostramos como evoluciona el numero de errores con las epocas en nuestro P
 Vemos que a la quinta epoca dejamos de tener errores y parece que la neurona esta entrenada
 """
 ppn = Perceptron(m = 0.1, n_iter = 10)
-ppn.fit(data.X, data.y)
+ppn.entrenar(data.X, data.y)
 """
 Ahora hacemos una funcion para dibujar el limite de decision
 """
 drawer = Drawer()
-drawer.plot_decision_regions(data, classifier=ppn).draw_plots(data).draw()
+drawer.plot_decision_regions(data, classifier=ppn)
+drawer.draw_plots(data)
+# se superpone la recta de 0 = w2x2 + w1x1 + w0 => x2 = -w1x1/w2 - w0/w2 con xmin y xmax.
+drawer.drawLine(-ppn.w[1]/ppn.w[2], -ppn.w[0]/ppn.w[2], data.X[:, 0].min() - 1, data.X[:, 0].max() + 1)
+drawer.draw()
