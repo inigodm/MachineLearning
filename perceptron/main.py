@@ -1,6 +1,7 @@
 from Data import Data
 from Drawer import Drawer
-from Neuronas import Perceptron
+from Neuronas import Perceptron, Adaline
+
 data = Data()
 """
 Ahora mostramos como evoluciona el numero de errores con las epocas en nuestro Perceptron
